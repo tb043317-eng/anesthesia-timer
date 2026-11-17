@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -21,7 +21,7 @@
         .export-section { text-align: center; margin-top: 20px; margin-bottom: 40px; }
         .export-btn { background: #28a745; font-size: 16px; padding: 12px 20px; width: 100%; color: white; }
         .export-btn:hover { background: #218838; }
-        textarea { width: 100%; height: 140px; margin-top: 10px; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-family: monospace; font-size: 14px; background: #fff; }
+        textarea { width: 100%; height: 160px; margin-top: 10px; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-family: monospace; font-size: 14px; background: #fff; }
     </style>
 </head>
 <body>
@@ -29,19 +29,19 @@
     <h2>麻醉文書作業時間記錄</h2>
     
     <div class="instructions">
-        <strong>填寫說明：</strong>完成各步驟計時後，直接點擊下方綠色按鈕，程式會自動抓取畫面上所有紀錄並產生回報文字！
+        <strong>填寫說明：</strong>完成各步驟計時後，點擊下方綠色按鈕，即可複製排版整齊、不斷行的回報文字！
     </div>
 
     <div id="app"></div>
 
     <div class="export-section">
         <label style="text-align: left; font-size: 16px; color: #0056b3; margin-bottom: 5px;">回報內容預覽：</label>
-        <textarea id="outputResult" placeholder="點擊下方綠色按鈕後，這裡會立刻出現回報文字..."></textarea>
-        <button class="export-btn" onclick="generateAndCopy()" style="margin-top: 10px;">一鍵產生並複製回報文字</button>
+        <textarea id="outputResult" placeholder="點擊下方綠色按鈕後產生回報文字..."></textarea>
+        <button class="export-btn" onclick="generateAndCopy()" style="margin-top: 10px;">一鍵複製回報文字</button>
     </div>
 
     <script>
-        const stepNames = [
+        const fullStepNames = [
             "1. 查詢病人基本資料 + 書寫時間",
             "2. 術中書寫 + 檢查時間",
             "3. 手術結束再書寫 + 檢查時間"
@@ -63,7 +63,7 @@
             for (let s = 1; s <= 3; s++) {
                 html += `
                     <div class="step-row">
-                        <label>${stepNames[s-1]}</label>
+                        <label>${fullStepNames[s-1]}</label>
                         <button id="btn_${p}_${s}" onclick="toggleTimer(${p}, ${s})">開始計時</button>
                         <span class="result" id="res_${p}_${s}">0 分 0 秒 (0.0 分)</span>
                     </div>
@@ -106,7 +106,7 @@
             res.innerText = `${mins} 分 ${secs} 秒 (${(item.elapsedSeconds / 60).toFixed(1)} 分)`;
         }
 
-        // 核心修正：直接從畫面上的文字（或現有紀錄）抓取，保證 100% 抓得到文字
+        // 調整格式：去掉前置減號，確保每一項都在同一行不折行
         function generateAndCopy() {
             let text = "【麻醉文書作業時間回報】\n";
             for (let p = 1; p <= 3; p++) {
@@ -114,7 +114,7 @@
                 for (let s = 1; s <= 3; s++) {
                     let item = state[p][s];
                     let mins = (item.elapsedSeconds / 60).toFixed(1);
-                    text += `- ${stepNames[s-1]}: ${mins} 分鐘\n`;
+                    text += `${fullStepNames[s-1]}: ${mins} 分鐘\n`;
                 }
             }
 
@@ -124,12 +124,12 @@
 
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).then(() => {
-                    alert("已成功產生回報文字並複製到剪貼簿！可直接貼到 Line 群組。");
+                    alert("已成功複製回報文字！可直接貼到 Line 群組。");
                 }).catch(() => {
-                    alert("已產生文字，請直接在下方框內長按複製！");
+                    alert("已產生文字，請在框內長按複製！");
                 });
             } else {
-                alert("已產生文字，請直接在下方框內長按複製！");
+                alert("已產生文字，請在框內長按複製！");
             }
         }
     </script>
